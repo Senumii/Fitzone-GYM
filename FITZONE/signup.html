@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitZone Fitness Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<section class="sub-header">
+    <nav>
+        <a href="index.html"><img src="images/logo.png" alt="FitZone Fitness Center"></a>
+        <div class="nav-links">
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="services.html">SERVICES</a></li>
+                <li><a href="booknow.html">BOOK NOW</a></li>
+                <li><a href="about.html">ABOUT US</a></li>
+                <li id="nav-signup"><a href="signup.html">SIGN UP</a></li>
+                <li id="nav-login"><a href="login.html">LOG IN</a></li>
+                <li id="nav-logout" style="display: none;"><a href="backend/logout.php">LOG OUT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+<h1>SIGN UP</h1>
+
+<div class="section" style="margin-bottom: 100px;">
+    <div class="booking-form">
+        <form class="gl-form" id="signupForm" action="backend/signup.php" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="fullName"><i class="fa-solid fa-user"></i> Full Name</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateOfBirth"><i class="fa-solid fa-calendar-days"></i> Date of Birth</label>
+                    <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fa-solid fa-lock"></i> Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+
+                <div class="form-group form-group--full" style="text-align: center; margin-top: 10px;">
+                    <a href="login.html" style="color: #2e7d32; text-decoration: none; font-size: 14px;">Already have an account? Log in here</a>
+                </div>
+
+                <div class="form-actions form-group--full">
+                    <button type="submit" class="hero-btn">SIGN UP</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<section class="footer">
+    <h4>ABOUT US</h4>
+    <p>
+        FitZone Fitness Center is a modern fitness destination in Kurunegala, dedicated to helping individuals improve their strength, health, and overall wellbeing.
+        <br>With professional trainers, modern equipment, and a supportive environment, we provide everything needed to maintain an active and healthy lifestyle.
+    </p>
+
+    <p>
+         <strong>Location:</strong> Kurunegala, Sri Lanka<br>
+         <strong>Email:</strong> info@fitzonefitness.lk<br>
+         <strong>Contact:</strong> +94 71 456 7890
+    </p>
+
+    <div class="icons">
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-x-twitter"></i>
+        <i class="fa-brands fa-linkedin"></i>
+    </div>
+
+    <p>© 2025 FitZone Fitness Center | All Rights Reserved</p>
+</section>
+
+<script>
+    // Set maximum date of birth to today (user must be at least 18 years old)
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateOfBirthInput = document.getElementById('dateOfBirth');
+        if (dateOfBirthInput) {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            dateOfBirthInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+        }
+
+        // Form validation for signup password confirmation
+        const signupForm = document.getElementById('signupForm');
+        if (signupForm) {
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Client-side validation
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match. Please try again.');
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters long.');
+                    return false;
+                }
+
+                // Get form data
+                const formData = new FormData(signupForm);
+                
+                // Show loading state
+                const submitBtn = signupForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating account...';
+                
+                // Send AJAX request
+                fetch('backend/signup.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.href = data.redirect || 'index.html';
+                    } else {
+                        alert(data.message || 'Signup failed. Please try again.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again later.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                });
+            });
+        }
+    });
+</script>
+
+<script src="js/auth.js"></script>
+</body>
+</html>
